@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('no_wa', 50)->nullable();
             $table->string('jenis_pengaduan', 60)->nullable();
             $table->text('deskripsi')->nullable();
+            $table->string('status', 30)->nullable();
             $table->timestamps();
         });
     }
