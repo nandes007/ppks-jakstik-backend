@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TicketRequest;
 use App\Models\Attachment;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -93,6 +94,7 @@ class TicketController extends Controller
 
     public function update(TicketRequest $request, $id)
     {
+        $user = $request->user();
         $ticket = Ticket::where('id', $id)->first();
 
         if (empty($ticket)) {
@@ -102,6 +104,8 @@ class TicketController extends Controller
         }
 
         $ticket->status = $request->status;
+        $ticket->approved_by = $user->id;
+        $ticket->approved_at = Carbon::now();
         $ticket->save();
 
         return response()->json([
