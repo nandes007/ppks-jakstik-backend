@@ -7,6 +7,7 @@ use App\Models\Attachment;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
@@ -30,9 +31,13 @@ class TicketController extends Controller
                 ));
     
                 if ($request->hasFile('attachments')) {
-                    foreach ($request->attachments as $attachment) {
+                    foreach ($request->file('attachments') as $attachment) {
+                        $filename = $attachment->getClientOriginalName();
+                        $customeFileName = date('YmdHis').'_'.$filename;
+                        $path = 'uploads/'.date('YmdHis').'_'.$filename;
+                        Storage::disk('public')->putFileAs('uploads', $attachment, $customeFileName);
                         $ticket->attachments()->create([
-                            'url' => $attachment
+                            'url' => $path
                         ]);
                     } 
                 }
@@ -43,7 +48,8 @@ class TicketController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Maaf, terjadi kesalahan pada server'
+                'message' => 'Maaf, terjadi kesalahan pada server',
+                'exception' => $e->getMessage()
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
     }

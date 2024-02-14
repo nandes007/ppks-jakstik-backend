@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Attachment extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'ticket_id',
+        'url'
+    ];
 }
