@@ -23,6 +23,7 @@ Route::resource('tickets', TicketController::class, [
     'only' => [
         'index',
         'store',
+        'show',
         'update'
     ]
 ]);

@@ -11,15 +11,30 @@ use Illuminate\Support\Facades\Storage;
 
 class TicketController extends Controller
 {
-    public function index()
+    public function index(TicketRequest $request)
     {
+        $tickets = Ticket::with('attachments');
+        $countPendingTicket = Ticket::where('status', 'Pending')->count();
+        $countResolvedTicket = Ticket::where('status', 'Resolved')->count();
 
+        if (!empty($request->status)) {
+            $tickets = $tickets->where('status', $request->status);
+        }
+
+        $tickets = $tickets->paginate(20);
+
+        return response()->json([
+            'tickets' => $tickets,
+            'count_pending_ticket' => $countPendingTicket,
+            'count_resolved_ticket' => $countResolvedTicket
+        ]);
     }
 
     public function store(TicketRequest $request)
     {
         try {
-            DB::transaction(function() use ($request) {
+            $ticket = DB::transaction(function() use ($request) {
+                $ticketNo = "PPKS-JAKSTIK-" . date('YmdHis') . rand(1, 100);
                 $ticket = Ticket::create(array_merge($request->only([
                         'no_ticket',
                         'nama',
@@ -27,7 +42,7 @@ class TicketController extends Controller
                         'no_wa',
                         'jenis_pengaduan',
                         'deskripsi'
-                    ]), ['status' => 'Pending']
+                    ]), ['status' => 'Pending', 'no_ticket' => $ticketNo]
                 ));
     
                 if ($request->hasFile('attachments')) {
@@ -41,10 +56,12 @@ class TicketController extends Controller
                         ]);
                     } 
                 }
+
+                return $ticket;
             });
 
             return response()->json([
-                'message' => 'Ticket berhasil di submit'
+                'message' => 'Ticket berhasil di submit, berikut No Ticket Anda : ' . $ticket->no_ticket
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -56,6 +73,35 @@ class TicketController extends Controller
 
     public function show($id)
     {
+        $ticket = Ticket::with('attachments')->where('id', $id)->first();
 
+        if (empty($ticket)) {
+            return response()->json([
+                'message' => 'Ticket tidak ditemukan!'
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        return response()->json([
+            'ticket' => $ticket
+        ]);
+    }
+
+    public function update(TicketRequest $request, $id)
+    {
+        $ticket = Ticket::where('id', $id)->first();
+
+        if (empty($ticket)) {
+            return response()->json([
+                'message' => 'Ticket tidak ditemukan!'
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $ticket->status = $request->status;
+        $ticket->save();
+
+        return response()->json([
+            'message' => 'Ticket dalam tahap konsultasi',
+            'ticket' => $ticket
+        ]);
     }
 }

@@ -21,12 +21,14 @@ class TicketRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        if ($this->method() == "GET" || $this->method() == "PUT") return [];
+        else return [
             'nama' => ['required', 'max:100'],
             'email' => ['required', 'max:60'],
             'no_wa' => ['required', 'max:50'],
             'jenis_pengaduan' => ['required', 'max:60'],
             'deskripsi' => ['required', 'max:200']
         ];
+        
     }
 }
