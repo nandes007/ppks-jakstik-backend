@@ -17,7 +17,10 @@ class Ticket extends Model
         'no_wa',
         'jenis_pengaduan',
         'deskripsi',
-        'status'
+        'status',
+        'created_by',
+        'approved_by',
+        'approved_at'
     ];
 
     protected $appends = [

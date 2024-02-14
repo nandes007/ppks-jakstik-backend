@@ -34,6 +34,7 @@ class TicketController extends Controller
     {
         try {
             $ticket = DB::transaction(function() use ($request) {
+                $user = $request->user();
                 $ticketNo = "PPKS-JAKSTIK-" . date('YmdHis') . rand(1, 100);
                 $ticket = Ticket::create(array_merge($request->only([
                         'no_ticket',
@@ -42,7 +43,11 @@ class TicketController extends Controller
                         'no_wa',
                         'jenis_pengaduan',
                         'deskripsi'
-                    ]), ['status' => 'Pending', 'no_ticket' => $ticketNo]
+                    ]), [
+                        'status' => 'Pending',
+                        'no_ticket' => $ticketNo,
+                        'created_by' => $user->id
+                    ]
                 ));
     
                 if ($request->hasFile('attachments')) {

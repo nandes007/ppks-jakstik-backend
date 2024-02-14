@@ -42,4 +42,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function ticket()
+    {
+        return $this->hasOne(Ticket::class, 'created_by');
+    }
 }
