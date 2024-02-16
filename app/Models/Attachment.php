@@ -13,4 +13,14 @@ class Attachment extends Model
         'ticket_id',
         'url'
     ];
+
+    protected $appends = ['signed_url'];
+    protected $domain = 'http://127.0.0.1:8000/';
+
+    public function getSignedUrlAttribute()
+    {
+        if (!empty($this->url)) {
+            return $this->domain . 'storage/' . $this->url;
+        }
+    }
 }
