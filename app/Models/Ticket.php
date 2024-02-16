@@ -24,7 +24,8 @@ class Ticket extends Model
     ];
 
     protected $appends = [
-        'category_formatted'
+        'category_formatted',
+        'status_alias'
     ];
 
     public function attachments()
@@ -52,6 +53,22 @@ class Ticket extends Model
                 break;
             default:
                 return "";
+        }
+    }
+
+    public function getStatusAliasAttribute()
+    {
+        switch($this->status) {
+            case "Pending":
+                return "Menghubungi";
+            case "Consultation":
+                return "Konsultasi";
+            case "Service":
+                return "Pemberian Layanan";
+            case "Resolved":
+                return "Penanganan";
+            default:
+                return "Menghubungi";
         }
     }
 }
