@@ -15,12 +15,12 @@ class Attachment extends Model
     ];
 
     protected $appends = ['signed_url'];
-    protected $domain = 'http://127.0.0.1:8000/';
+    // protected $domain = env("APP_URL", "http://localhost");
 
     public function getSignedUrlAttribute()
     {
         if (!empty($this->url)) {
-            return $this->domain . 'storage/' . $this->url;
+            return env("APP_URL", "http://localhost") . 'storage/' . $this->url;
         }
     }
 }
