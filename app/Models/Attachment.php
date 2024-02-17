@@ -16,8 +16,8 @@ class Attachment extends Model
 
     protected $appends = ['signed_url'];
     protected function getDomain() {
-        if (env("app.env") == "production") {
-            return env("app.url");
+        if (config("app.env") == "production") {
+            return config("app.url");
         } else {
             return "http://127.0.0.1:8000";
         }
